@@ -1,14 +1,15 @@
 #Requires AutoHotkey v2.0
+FileEncoding "UTF-8"
 #include IME.ahk
 
 global pressedKeys := Map()
 global lastKeyCombo := Map()
 
-modifiersFile := FileOpen("steno_modifiers.txt", "r")
+modifiersFile := FileOpen("modifiers.txt", "r")
 modifiers := modifiersFile.Read()
-keysFile := FileOpen("steno_keys.txt", "r")
+keysFile := FileOpen("keys.txt", "r")
 keys := keysFile.Read()
-keymapFile := FileOpen("steno_keymap_converted.txt", "r")
+keymapFile := FileOpen("keymaps.txt", "r")
 keymap := Map()
 
 Loop Parse keymapFile.Read(), "`n", "`n"
@@ -97,8 +98,18 @@ ComboToString(combo, useKey) {
 	return Sort(str, "N D,")
 }
 
+IsKatakana(str) {
+    return RegExMatch(str, "^[\x{30A0}-\x{30FF}]+$")
+}
+
 SendAction(action) {
-	SendInput(action)
+	if (IsKatakana(action)) {
+		IME_SetConvMode(27)
+		SendInput(action)
+	} else {
+		IME_SetConvMode(25)
+		SendInput(action)
+	}
 }
 
 SetHotkeysState(on) {
