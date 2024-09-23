@@ -4,6 +4,8 @@
 global pressedKeys := Map()
 global lastKeyCombo := Map()
 
+modifiersFile := FileOpen("steno_modifiers.txt", "r")
+modifiers := modifiersFile.Read()
 keysFile := FileOpen("steno_keys.txt", "r")
 keys := keysFile.Read()
 keymapFile := FileOpen("steno_keymap_converted.txt", "r")
@@ -36,6 +38,13 @@ Loop Parse, keys, ","
     key := Clean(A_LoopField)
 	Hotkey(key, KeyDown.Bind(), "B")
 	Hotkey(key " up", KeyUp.Bind(key), "B")
+}
+
+Loop Parse, modifiers, ","
+{
+	key := Clean(A_LoopField)
+	Hotkey("~" key, SetHotkeysStateKey.Bind(true))
+	Hotkey("~" key " up", SetHotkeysStateKey.Bind(false))
 }
 
 Clean(str) {
@@ -92,24 +101,28 @@ SendAction(action) {
 	SendInput(action)
 }
 
-
-SetHotkeysState() {
+SetHotkeysState(on) {
 	global keys
-	if(IME_GET()) {
-		Loop Parse, keys, ","
-		{
-			key := Clean(A_LoopField)
-			Hotkey(key, "On")
-			Hotkey(key " up", "On")
-		}
-	} else {
-		Loop Parse, keys, ","
-		{
-			key := Clean(A_LoopField)
-			Hotkey(key, "Off")
-			Hotkey(key " up", "Off")
-		}
+	str := on ? "On" : "Off"
+	Loop Parse, keys, ","
+	{
+		key := Clean(A_LoopField)
+		Hotkey(key, str)
+		Hotkey(key " up", str)
 	}
 }
 
-SetTimer(SetHotkeysState, 500)
+SetHotkeysStateIME() {
+	global keys
+	if(IME_GET()) {
+		SetHotkeysState(true)
+	} else {
+		SetHotkeysState(false)
+	}
+}
+
+SetHotkeysStateKey(on, key) {
+	SetHotkeysState(on)
+}
+
+SetTimer(SetHotkeysStateIME, 500)
