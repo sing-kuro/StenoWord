@@ -7,10 +7,27 @@ global lastKeyCombo := Map()
 
 modifiersFile := FileOpen("modifiers.txt", "r")
 modifiers := modifiersFile.Read()
-keysFile := FileOpen("keys.txt", "r")
-keys := keysFile.Read()
 keymapFile := FileOpen("keymaps.txt", "r")
 keymap := Map()
+dictFile := FileOpen("dict.txt", "r")
+dict := Map()
+
+Loop Parse dictFile.Read(), "`n", "`n"
+{
+	cleaned := Clean(A_LoopField)
+	if (cleaned = "")
+	{
+		continue
+	}
+	mapping := StrSplit(cleaned, ":")
+	key := ""
+	Loop Parse mapping[1]
+	{
+		key .= (A_Index=1) ? Clean(A_LoopField) : "," Clean(A_LoopField)
+	}
+	key := Sort(key, "D,")
+	dict[key] := mapping[2]
+}
 
 Loop Parse keymapFile.Read(), "`n", "`n"
 {
@@ -19,24 +36,12 @@ Loop Parse keymapFile.Read(), "`n", "`n"
 	{
 		continue
 	}
-	key := StrSplit(cleaned, ":")
-	vks := []
-	Loop Parse key[1], ","
-	{
-		vk := GetKeyVK(A_LoopField)
-		if (vk = 0)
-		{
-			MsgBox("Invalid key: " A_LoopField)
-		}
-		vks.Push(vk)
-	}
-	str := ComboToString(vks, false)
-	keymap[str] := key[2]
+	mapping := StrSplit(cleaned, ":")
+	keymap[mapping[2]] := mapping[1]
 }
 
-Loop Parse, keys, ","
+for key, _ in keymap
 {
-    key := Clean(A_LoopField)
 	Hotkey(key, KeyDown.Bind(), "B")
 	Hotkey(key " up", KeyUp.Bind(key), "B")
 }
@@ -56,7 +61,7 @@ KeyDown(key) {
 	global pressedKeys
 	if (!pressedKeys.Has(key)) {
 		pressedKeys[key] := true
-		AddToCombo(GetKeyVK(key))
+		AddToCombo(key)
 	}
 }
 
@@ -80,23 +85,27 @@ AddToCombo(key) {
 }
 
 TriggerAction(combo) {
-	global keymap
-	str := ComboToString(combo, true)
-	if (keymap.Has(str)) {
-		action := keymap[str]
+	global dict
+	str := ApplyKeymap(combo)
+	if (dict.Has(str)) {
+		action := dict[str]
 		SendAction(action)
 	}
 }
 
-ComboToString(combo, useKey) {
+ApplyKeymap(combo) {
+	global keymap
 	str := ""
-	For key, val in combo
-	{
-		app := useKey ? key : val
-		str .= (A_Index=1) ? app : "," app
+	for key, _ in combo {
+		if (keymap.Has(key)) {
+			str .= keymap[key] ","
+		}
 	}
-	return Sort(str, "N D,")
+	str := SubStr(str, 1, StrLen(str) - 1)
+	str := Sort(str, "D,")
+	return str
 }
+
 
 IsKatakana(str) {
     return RegExMatch(str, "^[\x{30A0}-\x{30FF}]+$")
@@ -113,18 +122,15 @@ SendAction(action) {
 }
 
 SetHotkeysState(on) {
-	global keys
 	str := on ? "On" : "Off"
-	Loop Parse, keys, ","
+	for key, _ in keymap
 	{
-		key := Clean(A_LoopField)
 		Hotkey(key, str)
 		Hotkey(key " up", str)
 	}
 }
 
 SetHotkeysStateIME() {
-	global keys
 	if(IME_GET()) {
 		SetHotkeysState(true)
 	} else {

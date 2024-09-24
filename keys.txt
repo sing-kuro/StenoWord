@@ -1,2 +1,0 @@
-a,d,e,f,g,h,j,k,l,s,Backspace,Delete,Space,Enter,;,Esc,'
-
