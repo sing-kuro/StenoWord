@@ -2,6 +2,14 @@ X:{Backspace}
 Y:{Enter}
 M:{vk1Dsc07B}
 N:{vk1Csc079}
+L:、
+R:。
+LR:{Space}
+
+P:「
+T:（
+K:）
+S:」
 
 
 
@@ -1475,18 +1483,18 @@ LPTRA:ならぬ
 PTHSRUE:比べ
 PTHSRUO:調べ
 SRUI:易い
-S:作り
-SUE:形
+LPUE:作り
+PTSRI:形
 LSRUI:易く
-LS:づくり
+LPTUE:づくり
 KRUI:にくい
-K:作る
+PKUE:作る
 LKRUI:にくく
-LK:づくる
+PTKUE:づくる
 MRUI:やす
-M:つくら
+PTHKUE:つくら
 MSRUI:し易い
-MS:づくら
+PTHSUE:づくら
 MHSRUI:し易く
 MKRUI:しにくい
 MHKRUI:しにくく
@@ -2036,8 +2044,8 @@ LTHSNUOE:りゃー
 LTHSNUOIE:りゅー
 LTHSNAOIE:りょー
 PTHSNU:ヴ
-PTHS:・
-PTHSA:ー
+MSA:・
+H:ー
 THKNUOE:ふぁ
 THKNUOIE:ふぇ
 THKNAOIE:ふぉ
@@ -2165,8 +2173,8 @@ THSUR:ぅ
 THSER:ぇ
 THSOR:ぉ
 PTHSUN:ヴ
-PTHS:・
-PTHSA:ー
+SMA:・
+H:ー
 LAOR:ある
 LOIR:おる
 LIER:いる
