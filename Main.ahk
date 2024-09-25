@@ -111,8 +111,18 @@ IsKatakana(str) {
     return RegExMatch(str, "^[\x{30A0}-\x{30FF}]+$")
 }
 
+HasKanji(str) {
+    return RegExMatch(str, "[\x{4E00}-\x{9FFF}\x{3400}-\x{4DBF}\x{20000}-\x{2A6DF}]")
+}
+
+EndsWithHiragana(str) {
+    return RegExMatch(str, "[\x{3040}-\x{309F}]$")
+}
+
 SendAction(action) {
-	if (IsKatakana(action)) {
+	if (HasKanji(action) && EndsWithHiragana(action)) {
+		SendInput(action "{Enter}")
+	} else if (IsKatakana(action)) {
 		IME_SetConvMode(27)
 		SendInput(action)
 	} else {
