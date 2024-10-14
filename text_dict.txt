@@ -11,6 +11,17 @@ T:（
 K:）
 S:」
 
+MP:1
+MT:2
+MH:3
+MK:4
+MS:5
+MU:6
+MA:7
+MO:8
+MI:9
+ME:0
+
 
 
 
